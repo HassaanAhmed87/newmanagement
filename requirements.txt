@@ -1,7 +1,5 @@
 streamlit
-openai
-langchain
-langchain-community
+sentence-transformers
 faiss-cpu
-tiktoken
-pypdf2
+PyPDF2
+scikit-learn
