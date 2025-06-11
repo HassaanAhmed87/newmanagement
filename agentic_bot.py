@@ -12,10 +12,12 @@ def load_text_chunks(pdf_path):
     text = ""
     for page in reader.pages:
         text += page.extract_text() or ""
+
+    # Break into overlapping chunks
     chunk_size = 700
-overlap = 100
-chunks = [text[i:i+chunk_size] for i in range(0, len(text), chunk_size - overlap)]
-return chunks
+    overlap = 100
+    chunks = [text[i:i+chunk_size] for i in range(0, len(text), chunk_size - overlap)]
+    return chunks
 
 @st.cache_resource
 def build_vector_store(chunks):
