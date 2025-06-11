@@ -33,11 +33,18 @@ if query:
     q_vector = model.encode([query])
     scores, idxs = index.search(q_vector, k=3)
     results = [raw_chunks[i] for i in idxs[0]]
+
+    # Build response
     answer = "**Based on your textbook, here's what I found:**\n\n"
-answer += "\n---\n".join(results)
-for word in query.lower().split():
-    answer = answer.replace(word, f"**{word}**")
-st.chat_message("user").markdown(query)
+    answer += "\n---\n".join(results)
+
+    # Optional: highlight matched keywords
+    for word in query.lower().split():
+        answer = answer.replace(word, f"**{word}**")
+
+    # Display messages
+    st.chat_message("user").markdown(query)
     st.chat_message("assistant").markdown(answer)
+
 
 
