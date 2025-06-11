@@ -14,7 +14,7 @@ def load_text_chunks(pdf_path):
         text += page.extract_text() or ""
 
     # Break into overlapping chunks
-    chunk_size = 700
+    chunk_size = 400
     overlap = 100
     chunks = [text[i:i+chunk_size] for i in range(0, len(text), chunk_size - overlap)]
     return chunks
@@ -30,20 +30,17 @@ def build_vector_store(chunks):
 chunks = load_text_chunks("management_book.pdf")
 index, vectors, raw_chunks, model = build_vector_store(chunks)
 
-query = st.chat_input("Ask me anything about the course...")
+query = st.chat_input("Ask me anything about the management course...")
 if query:
     q_vector = model.encode([query])
     scores, idxs = index.search(q_vector, k=3)
     results = [raw_chunks[i] for i in idxs[0]]
 
     # Build response
-    answer = "**Based on your textbook, here's what I found:**\n\n"
+    answer = "**Based on your textbook, here's what I found (most relevant excerpts):**\n\n"
     answer += "\n---\n".join(results)
 
-    # Optional: highlight matched keywords
-    for word in query.lower().split():
-        answer = answer.replace(word, f"**{word}**")
-
+    
     # Display messages
     st.chat_message("user").markdown(query)
     st.chat_message("assistant").markdown(answer)
