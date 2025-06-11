@@ -12,7 +12,10 @@ def load_text_chunks(pdf_path):
     text = ""
     for page in reader.pages:
         text += page.extract_text() or ""
-    return [text[i:i+500] for i in range(0, len(text), 500)]
+    chunk_size = 700
+overlap = 100
+chunks = [text[i:i+chunk_size] for i in range(0, len(text), chunk_size - overlap)]
+return chunks
 
 @st.cache_resource
 def build_vector_store(chunks):
@@ -30,6 +33,11 @@ if query:
     q_vector = model.encode([query])
     scores, idxs = index.search(q_vector, k=3)
     results = [raw_chunks[i] for i in idxs[0]]
-    answer = "\n---\n".join(results)
-    st.chat_message("user").markdown(query)
+    answer = "**Based on your textbook, here's what I found:**\n\n"
+answer += "\n---\n".join(results)
+for word in query.lower().split():
+    answer = answer.replace(word, f"**{word}**")
+st.chat_message("user").markdown(query)
     st.chat_message("assistant").markdown(answer)
+
+
